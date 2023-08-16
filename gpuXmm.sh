@@ -408,9 +408,9 @@ run_check()
   for precision in ${precision_list[@]}
   do
     eval_verbose echo -e "Check base kernel . . ."
-    eval_verbose make check KERNEL=BASIS GPU=$GPU -B
+    eval_verbose make check KERNEL=BASIS GPU=$GPU PRECISION=$precision -B
     check_error "make echoué"
-    eval ./check $m $n $p "./output/check/check_basis.out"
+    eval ./check $m $n $p "./output/check/check_basis_$precision.out"
     check_error "run failed"
 
     for i in $kernel_to_run; do
@@ -427,7 +427,7 @@ run_check()
 
 check_kernel()
 {
-  output_file="$WORKDIR/output/check/check_$kernel_lowercase.out"
+  output_file="$WORKDIR/output/check/check_"$kernel_lowercase"_"$precision".out"
   cmd="$WORKDIR/check $m $n $p $output_file"
   eval_verbose echo "exec command : $cmd"
 
@@ -444,7 +444,7 @@ check_kernel()
   fi
 
   check_error "run check failed"
-  echo "Check kernel $kernel_lowercase ($precision) : $(python3 $WORKDIR/python/check.py $WORKDIR/output/check/check_basis.out $output_file)"
+  echo "Check kernel $kernel_lowercase ($precision) : $(python3 $WORKDIR/python/check.py $WORKDIR/output/check/check_basis_$precision.out $output_file)"
   check_error "script python failed"
 }
 
