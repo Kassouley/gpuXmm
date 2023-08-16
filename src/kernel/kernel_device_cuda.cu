@@ -77,6 +77,6 @@ void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p,
         blockDim.y = 32;
         gridDim.y = ceil(double(p)/double(blockDim.y));
     }
-    kernel_gpuXmm_aux<<<gridDim, blockDim>>>( m, n, p, d_a, d_b, d_c);
+    kernel_gpuXmm_aux<<<gridDim, blockDim>>>( m, n, p, a, b, c);
 }
 #endif
