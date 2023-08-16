@@ -48,19 +48,19 @@ CFLAGS = -g -O3
 
 LFLAGS = $(OMP_FLAG) -lm
 ifeq ($(KERNEL),CBLAS)
-	LFLAGS+=-lblas
-else ifeq ($(KERNEL),ARMPL)
-	LFLAGS+=-armpl
+	LFLAGS += -lblas
 else ifneq ($(IS_KERNEL_ROCBLAS),)
-	LFLAGS+=-lrocblas  -L/opt/rocm-5.4.3/rocblas/lib/librocblas.so  -I/opt/rocm-5.4.3/include/
+	LFLAGS += -lrocblas  -L/opt/rocm-5.4.3/rocblas/lib/librocblas.so  -I/opt/rocm-5.4.3/include/
 else ifneq ($(IS_KERNEL_CUBLAS),)
-	LFLAGS+=-lcublas
+	LFLAGS += -lcublas
 endif
 
 # ----------------- OPT_FLAGS ----------------- #
 
 ifeq ($(KERNEL),CPU_OMP)
 	OPT_FLAGS=-fopenmp
+else ifeq ($(KERNEL),ARMPL)
+	OPT_FLAGS=-armpl
 else ifneq ($(IS_KERNEL_OMP),)
 	ifeq ($(GPU), AMD)
 		OPT_FLAGS=-fopenmp=libomp -target x86_64-pc-linux-gnu \
