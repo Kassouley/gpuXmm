@@ -79,11 +79,11 @@ echo_option_lines()
 
 usage()
 {  
-  if [ $cmd == "check" ]; then
+  if [ "$cmd" == "check" ]; then
     usage_cmd "$cmd {options} -mXX -nXX -pXX <kernel>"
-  elif [ $cmd == "measure" ]; then
+  elif [ "$cmd" == "measure" ]; then
     usage_cmd "$cmd {options} -mXX -nXX -pXX <kernel>"
-  elif [ $cmd == "rank-update" ]; then
+  elif [ "$cmd" == "rank-update" ]; then
     usage_cmd "$cmd {options} <kernel>"
   fi  
   echo
@@ -154,16 +154,42 @@ eval_verbose()
   if [ $verbose == 1 ]; then
     eval $@
   fi
+  if [ $verbose == 0 ]; then
+    eval $@ > /dev/null
+  fi
 }
 
 ############################################################
-# CHECK REQUIERMENT                                        #
+# CHECK AVAILABLE KERNEL                                   #
 ############################################################
-check_requierment()
+check_kernel_avail()
 {
-  JQ_OK=$(which jq)
-  if [ "" = "$JQ_OK" ]; then
-    yn -n "jq is needed. Install jq ?" "sudo apt-get --yes install jq" "echo "Aborted""
+  kernel_list=(basis)
+  
+  if ldconfig -p | grep -q libcblas; then
+    kernel_list+=(cblas)
+  fi
+
+  if ldconfig -p | grep -q libgomp; then
+    kernel_list+=(cpu_omp gpu_omp gpu_omp_wo_dt)
+  fi
+
+  if ldconfig -p | grep -q libaccinj64; then
+    kernel_list+=(acc acc_wo_dt)
+  fi
+
+  if ldconfig -p | grep -q libamdhip64; then
+    kernel_list+=(hip hip_wo_dt)   
+    if ldconfig -p | grep -q librocblas; then
+      kernel_list+=(rocblas rocblas_wo_dt)
+    fi
+  fi
+
+  if command -v nvcc &>/dev/null; then
+    kernel_list+=(cuda cuda_wo_dt)
+    if ldconfig -p | grep -q libcublas; then
+      kernel_list+=(cublas cublas_wo_dt)
+    fi
   fi
 }
 
@@ -206,8 +232,8 @@ run_command()
               opt_list_short="hafSDvr" ; 
               opt_list="help,force,all,verbose,profiler,rdtsc,save::,plot:: " ; 
               run_rank_update $@ ;; 
-        "calibrate") run_calibrate $@ ;; 
         -h|--help) usage ;; 
+        "") echo "gpuXmm: need command"; usage ;;
         *) echo "gpuXmm: $cmd is not an available command"; usage ;;
     esac
 }
@@ -253,8 +279,7 @@ get_kernels_to_run()
 build_driver()
 {
   eval_verbose echo "Build $kernel_lowercase kernel . . . "
-  if [ $verbose == 0 ]; then quiet=--quiet; fi
-  eval make $1 -B $quiet GPU=$GPU KERNEL=$kernel_uppercase METRIC=$metric_format PRECISION=$precision
+  eval_verbose make $1 -B GPU=$GPU KERNEL=$kernel_uppercase METRIC=$metric_format PRECISION=$precision
   check_error "make failed"
 }
 
@@ -268,16 +293,11 @@ init_option_var()
   save=0
   metric_format="GFLOPS/s"
   
-  if [ $cmd == "rank-update" ]; then
-    kernel_list=( $(jq ".$GPU|keys_unsorted[]" $WORKDIR/json/measure_config.json -r) )
-
-  elif [ $cmd == "measure" ]; then
-    kernel_list=( $(jq ".$GPU|keys_unsorted[]" json/measure_config.json -r) )
+  if [ $cmd == "measure" ]; then
     plot_file="$WORKDIR/output/graphs/graph_$(date +%F-%T).png"
     save_file="$WORKDIR/output/measure/measure_$(date +%F-%T).out"
-
   elif [ $cmd == "check" ]; then
-    kernel_list=( $(jq ".$GPU|keys_unsorted[1:][]" $WORKDIR/json/measure_config.json -r) )
+    kernel_list=("${kernel_list[@]:1}")
   fi
 }
 
@@ -388,7 +408,7 @@ run_check()
   for precision in ${precision_list[@]}
   do
     eval_verbose echo -e "Check base kernel . . ."
-    make check KERNEL=BASIS GPU=$GPU -B --quiet
+    eval_verbose make check KERNEL=BASIS GPU=$GPU -B
     check_error "make echoué"
     eval ./check $m $n $p "./output/check/check_basis.out"
     check_error "run failed"
@@ -535,10 +555,9 @@ measure_kernel()
   warmup=1000
   rep=100
 
-  eval_verbose echo "exec command : $cmd"
-
   while [[ $is_stab_ok == false ]] ; do
     cmd="$WORKDIR/measure $1 $2 $3 $warmup $rep"
+    eval_verbose echo "exec command : $cmd"
 
     if [ $profiler == 1 ]; then
       profiler_file="$kernel_lowercase_$1_$2_$3"
@@ -570,7 +589,7 @@ measure_kernel()
 ############################################################
 
 check_gpu
-check_requierment
+check_kernel_avail
 WORKDIR=`realpath $(dirname $0)`
 cd $WORKDIR
 

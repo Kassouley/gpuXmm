@@ -22,33 +22,30 @@ Just :
 And build with :
 ```bash
 ./setup.sh
-make measure KERNEL=[KERNEL_NAME] CLOCK=[RDTSC|MS] GPU=[NVIDIA|AMD] CC=whateveruwant
-make check KERNEL=[KERNEL_NAME] GPU=[NVIDIA|AMD] CC=whateveruwant
+make measure KERNEL=[KERNEL_NAME] METRIC=[RDTSC-Cycles|GFLOPS] GPU=[NVIDIA|AMD]
+make check KERNEL=[KERNEL_NAME] GPU=[NVIDIA|AMD]
 ```
 
 KERNEL_NAME should be in uppercase.
 
-CLOCK is optional (MS by default)
+METRIC is optional (GFLOPS by default)
 
 GPU is optional (AMD by default)
 
-CC is optional (AMD Clang on AMD and NVC on NVIDIA (NVCC for CUDA kernels) by default)
-
 Then run with :
 ```bash
-./measure <problem size> <nb warmup> <nb rep>
-./check <problem size> [file name]
+./measure <m> <n> <k> <nb warmup> <nb rep>
+./check <m> <n> <k> [file name]
 ```
 
-- problem size is the size n of an n x n matrix
+- m, n k is the size of the matrices for the multiplication (c[mxp] = a[mxn] * b[nxp])
 - nb warmup is the number of warmup before starting the bench
 - nb rep is the number of repetitions to dampen the accuracy of the timer
 - file name is an outfile
-- nb step is the number of step to calibrate the warmup
     
 ## Code Features
 
-- Shows us the time of a kernel in millisecond or RDTSC-Cycles
+- Shows us the performance of a kernel in GFLOPS / millisecond or RDTSC-Cycles
 - Benchmark on CPU using OpenMP and CBLAS (on NVIDIA & AMD)
 - Benchmark on GPU using OpenMP with and without the data transfer (on NVIDIA & AMD)
 - Benchmark on GPU using OpenACC with and without the data transfer (on NVIDIA)
@@ -57,11 +54,12 @@ Then run with :
 - Benchmark on GPU using CUDA with and without the data transfer (on NVIDIA)
 - Benchmark on GPU using cuBLAS with and without the data transfer (on NVIDIA)
 - Checker for all these kernels
-- Warmup calibration for all these kernels
 
 ## Script Features
 
-### Bash script
+### gpuXmm.sh
+
+Usage: ./gpuXmm.sh [cmd] {options} [args]"
 
 cmd:
     check       : check matrix multiply output
@@ -74,14 +72,13 @@ check.py :
 - take in argument two output file and a matrix size
 - Check if the two output files are the same and if not, give the max error between these two files
 
-
-graph-gen-measure.py :
-- take in argument a matrix size, an output file from the measure script, a output png file and a time metric (ms or rdtsc)
+plot_gen_measure.py :
+- take in argument a metric format ("GFLOPS/s", "RDTSC-Cycle" or "Time (ms)"), an csv like output file from the measure script and a file name (.png)
 - Generate a graph based on benchmark outputs from the measure script
 
-graph-gen-warmup.py :
-- take in argument a matrix size, an output file from the calibrate script, a output png file and a time metric (ms or rdtsc)
-- Generate a graph based on calibration outputs from the calibrate script
+plot_gen_rankupdate.py :
+- take in argument an output file from the rank-update script and a file name (.png)
+- Generate a graph based on rank-update outputs from the rank-update script
 
 
 ## Kernel List
@@ -113,36 +110,32 @@ On NVIDIA :
 - cublas_wo_dt 
 
 
-## Documentation
-
-[Intership report on GPU](https://www.overleaf.com/read/cjpngdgvjckd)
-
 ## Usage/Examples
 
 By using the script :
 
 ```bash
-./script/measure.sh {options} [problem size] <kernels>
+./gpuXmm measure {options} -mXX -nXX -pXX <kernel>
 ```
 
 Example :
 ```bash
-./script/measure.sh -p BASIS hip rocblas_wo_dt 1000 -v
+./gpuXmm measure -g BASIS hip rocblas_wo_dt -m1000 -vr
 ```
 will run a 3 benchmark (RDTSC Cycles metric) of the kernel basis hip and rocblas_wo_dt for a 1000x1000 matrix in verbose and will generate a graph of the result
 
 ```bash
-./script/measure.sh 100 -ma
+./gpuXmm measure -m100 -p26 -a
 ```
-will run all kernels (millisecond metric) for a 100x100 matrix
+will run all kernels (GFLOPS/s metric) for c[100x100] = a[100x26] * b[26x100]
 
 Use the '-h' option for more information
 
 ```bash
-./script/check.sh {options} [problem size] <kernels>
+./gpuXmm check {options} -mXX -nXX -pXX <kernel>
 ```
 ```bash
-./script/check.sh 100 -a
+./gpuXmm check -m100 -a
 ```
 will check all kernels for a 100x100 matrix and compare it with the basis kernel
 

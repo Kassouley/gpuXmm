@@ -1,0 +1,10 @@
+output/*
+build/*
+output/
+build/
+slurm*
+save/*
+*.o
+measure
+check
+*.slurm
