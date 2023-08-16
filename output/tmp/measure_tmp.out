@@ -1,2 +1,0 @@
-          kernel ,  prs ,     m ,     n ,     p ,        GLOPS/s ,   minimum (ms) ,     median (ms),   stab (%)
-         rocblas ,   DP ,   100 ,   100 ,   100 ,      24.015206 ,       0.080960 ,       0.083048 ,   2.579733
