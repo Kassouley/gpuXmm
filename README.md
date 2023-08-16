@@ -68,6 +68,8 @@ cmd:
 
 ### Python script
 
+All python scripts are used in gpuXmm.sh but these scripts can be use easily by user call.
+
 check.py :
 - take in argument two output file and a matrix size
 - Check if the two output files are the same and if not, give the max error between these two files
