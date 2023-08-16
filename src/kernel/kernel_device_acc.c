@@ -3,7 +3,7 @@
 #include "gpuXmm.h"
 #include "kernel.h"
 
-#ifdef OPENACC
+#ifdef ACC
 void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p, 
                     const gpuXmm_precision_t* a, const gpuXmm_precision_t* b, gpuXmm_precision_t* c)
 {
@@ -29,7 +29,7 @@ void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p,
 }
 #endif
 
-#ifdef OPENACC_WO_DT
+#ifdef ACC_WO_DT
 void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p, 
                     const gpuXmm_precision_t* a, const gpuXmm_precision_t* b, gpuXmm_precision_t* c)
 {

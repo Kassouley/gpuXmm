@@ -52,5 +52,6 @@ typedef cublasHandle_t gpuXmm_handle_t;
 #define gpuXmm_deviceSynchronize() \
 {\
     cudaDeviceSynchronize();\
-}\
+}
+
 #endif
