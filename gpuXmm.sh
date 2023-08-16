@@ -160,37 +160,11 @@ eval_verbose()
 }
 
 ############################################################
-# CHECK AVAILABLE KERNEL                                   #
+# GET AVAILABLE KERNEL                                     #
 ############################################################
-check_kernel_avail()
+get_kernel_avail()
 {
-  kernel_list=(basis)
-  
-  if ldconfig -p | grep -q libcblas; then
-    kernel_list+=(cblas)
-  fi
-
-  if ldconfig -p | grep -q libgomp; then
-    kernel_list+=(cpu_omp gpu_omp gpu_omp_wo_dt)
-  fi
-
-  if ldconfig -p | grep -q libaccinj64; then
-    kernel_list+=(acc acc_wo_dt)
-  fi
-
-  if ldconfig -p | grep -q libamdhip64; then
-    kernel_list+=(hip hip_wo_dt)   
-    if ldconfig -p | grep -q librocblas; then
-      kernel_list+=(rocblas rocblas_wo_dt)
-    fi
-  fi
-
-  if command -v nvcc &>/dev/null; then
-    kernel_list+=(cuda cuda_wo_dt)
-    if ldconfig -p | grep -q libcublas; then
-      kernel_list+=(cublas cublas_wo_dt)
-    fi
-  fi
+  kernel_list=( $(cat kernels_avail.config ) )
 }
 
 
@@ -589,9 +563,9 @@ measure_kernel()
 ############################################################
 
 check_gpu
-check_kernel_avail
 WORKDIR=`realpath $(dirname $0)`
 cd $WORKDIR
+get_kernel_avail
 
 run_command $@
 
