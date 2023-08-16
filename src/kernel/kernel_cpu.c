@@ -52,3 +52,16 @@ void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p,
     #endif
 }
 #endif
+
+#ifdef ARMPL
+#include <armpl.h>
+void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p, 
+                    const gpuXmm_precision_t* a, const gpuXmm_precision_t* b, gpuXmm_precision_t* c)
+{
+    #ifdef SP
+    sgemm_('N', 'N', m, p, n, 1.0, a, n, b, p, 0.0, c, p);
+    #else //DP
+    dgemm_('N', 'N', m, p, n, 1.0, a, n, b, p, 0.0, c, p);
+    #endif
+}
+#endif
