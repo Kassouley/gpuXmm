@@ -11,6 +11,7 @@ IS_KERNEL_CUDA 		:= $(filter $(KERNEL), CUDA CUDA_WO_DT)
 IS_KERNEL_CUBLAS 	:= $(filter $(KERNEL), CUBLAS CUBLAS_WO_DT)
 
 # -------------------- CC -------------------- #
+
 ifneq ($(filter $(KERNEL), HIP HIP_WO_DT ROCBLAS ROCBLAS_WO_DT),)
 	CC=hipcc
 else ifneq ($(filter $(KERNEL), CUDA CUDA_WO_DT CUBLAS CUBLAS_WO_DT),)
@@ -25,7 +26,7 @@ else
 		CC=nvc
 	endif
 endif
-MP_FLAG ?= -fopenmp
+OMP_FLAG ?= -fopenmp
 
 # ---------------- INCLUDE DIR---------------- #
 

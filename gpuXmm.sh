@@ -406,8 +406,8 @@ check_kernel()
   eval_verbose echo "exec command : $cmd"
 
   if [ $profiler == 1 ]; then
-    profiler_file="$kernel_lowercase_$m_$n_$p_$precision"
-    profiler_dir=profiler_$profiler_file_$(date +%F-%T)
+    profiler_file="$kernel_lowercase"_"$m"_"$n"_"$p"_"$precision"
+    profiler_dir="$profiler_file"_$(date +%F-%T)
     mkdir $WORKDIR/output/profiler/$profiler_dir
     case "$GPU" in
         "NVIDIA") eval "nsys profile -o $WORKDIR/output/profiler/$profiler_dir/$profiler_file-rep $cmd" ;;
@@ -534,8 +534,8 @@ measure_kernel()
     eval_verbose echo "exec command : $cmd"
 
     if [ $profiler == 1 ]; then
-      profiler_file="$kernel_lowercase_$1_$2_$3"
-      profiler_dir=profiler_$profiler_file_$(date +%F-%T)
+      profiler_file="$kernel_lowercase"_"$1"_"$2"_"$3"_"$precision"
+      profiler_dir="$profiler_file"_$(date +%F-%T)
       mkdir $WORKDIR/output/profiler/$profiler_dir
       case "$GPU" in
           "NVIDIA") eval "nsys profile -o $WORKDIR/output/profiler/$profiler_dir/$profiler_file-rep $cmd" ;;
@@ -562,7 +562,7 @@ measure_kernel()
 # MAIN                                                     #
 ############################################################
 
-# check_gpu
+check_gpu
 WORKDIR=`realpath $(dirname $0)`
 cd $WORKDIR
 get_kernel_avail
