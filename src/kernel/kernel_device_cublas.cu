@@ -26,11 +26,16 @@ void kernel_gpuXmm (cublasHandle_t handle, unsigned int m, unsigned int n, unsig
 
     gpuXmm_precision_t alpha = 1.0f;
     gpuXmm_precision_t beta = 0.0f;
-    
-    kernel_cublas_Xgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
-                m, n, p, alpha, d_a, n, d_b, p, beta, d_c, p);
-        
-	CHECK(cudaMemcpy(c, d_c, size_c, cudaMemcpyDeviceToHost));
+   
+    #ifdef SP
+        cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
+                p, m, n, &alpha, d_b, p, d_a, n, &beta, d_c, p);
+    #else // DP
+        cublasDgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
+                p, m, n, &alpha, d_b, p, d_a, n, &beta, d_c, p);
+    #endif 
+   
+    CHECK(cudaMemcpy(c, d_c, size_c, cudaMemcpyDeviceToHost));
 
     CHECK(cudaFree(d_a));
     CHECK(cudaFree(d_b));
@@ -45,8 +50,13 @@ void kernel_gpuXmm (cublasHandle_t handle, unsigned int m, unsigned int n, unsig
 { 
     gpuXmm_precision_t alpha = 1.0f;
     gpuXmm_precision_t beta = 0.0f;
-    
-    kernel_cublas_Xgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
-                m, n, p, alpha, d_a, n, d_b, p, beta, d_c, p);
+
+    #ifdef SP
+        cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
+                p, m, n, &alpha, b, p, a, n, &beta, c, p);
+    #else // DP
+        cublasDgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
+                p, m, n, &alpha, b, p, a, n, &beta, c, p);
+    #endif
 }
 #endif

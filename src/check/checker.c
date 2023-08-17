@@ -29,7 +29,8 @@ int main(int argc, char **argv)
         else if (argc == 5)
             strcpy(file_name, argv[4]);
     }
-    
+	
+
     int size_a = m * n * sizeof(gpuXmm_precision_t);
     int size_b = n * p * sizeof(gpuXmm_precision_t);
     int size_c = m * p * sizeof(gpuXmm_precision_t);

@@ -25,7 +25,7 @@ else
 		CC=nvc
 	endif
 endif
-OMP_FLAG ?= -fopenmp
+MP_FLAG ?= -fopenmp
 
 # ---------------- INCLUDE DIR---------------- #
 
@@ -147,6 +147,7 @@ ifeq ($(METRIC), RDTSC-Cycles)
 endif
 
 all: check measure
+
 
 .PHONY: $(BUILD_DIR)/kernel.o $(BUILD_DIR)/driver.o $(BUILD_DIR)/driver_check.o
 

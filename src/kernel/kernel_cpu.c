@@ -58,10 +58,14 @@ void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p,
 void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p, 
                     const gpuXmm_precision_t* a, const gpuXmm_precision_t* b, gpuXmm_precision_t* c)
 {
+    gpuXmm_precision_t alpha = 1.0, beta = 0.0;
+    armpl_int_t mm = (armpl_int_t) m;
+    armpl_int_t nn = (armpl_int_t) n;
+    armpl_int_t pp = (armpl_int_t) p;
     #ifdef SP
-    sgemm_('N', 'N', m, p, n, 1.0, a, n, b, p, 0.0, c, p);
+    sgemm_("N", "N", &pp, &mm, &nn, &alpha, b, &pp, a, &nn, &beta, c, &pp);
     #else //DP
-    dgemm_('N', 'N', m, p, n, 1.0, a, n, b, p, 0.0, c, p);
+    dgemm_("N", "N", &pp, &mm, &nn, &alpha, b, &pp, a, &nn, &beta, c, &pp);
     #endif
 }
 #endif

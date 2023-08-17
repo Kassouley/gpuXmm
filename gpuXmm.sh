@@ -562,7 +562,7 @@ measure_kernel()
 # MAIN                                                     #
 ############################################################
 
-check_gpu
+# check_gpu
 WORKDIR=`realpath $(dirname $0)`
 cd $WORKDIR
 get_kernel_avail
