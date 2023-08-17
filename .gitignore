@@ -7,4 +7,5 @@ save/*
 *.o
 measure
 check
+kernels_avail.config
 *.slurm

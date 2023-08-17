@@ -14,9 +14,9 @@ Matrix Multiply Benchmark on GPU and CPU using OpenMP, OpenACC, HIP, rocBLAS, CU
 
 No particulary installation needed.
 
-Just :
+Just run :
 ```bash
-./setup.sh
+./setup.sh all
 ```
 
 And build with :
@@ -46,7 +46,8 @@ Then run with :
 ## Code Features
 
 - Shows us the performance of a kernel in GFLOPS / millisecond or RDTSC-Cycles
-- Benchmark on CPU using OpenMP and CBLAS (on NVIDIA & AMD)
+- Benchmark on CPU using OpenMP and CBLAS
+- Benchmark on CPU using ARMpl (on ARM)
 - Benchmark on GPU using OpenMP with and without the data transfer (on NVIDIA & AMD)
 - Benchmark on GPU using OpenACC with and without the data transfer (on NVIDIA)
 - Benchmark on GPU using HIP with and without the data transfer (on AMD)
@@ -59,12 +60,17 @@ Then run with :
 
 ### gpuXmm.sh
 
+This script enables three actions:
+
+- Check: Initiates the 'check' program multiple times across various kernels, with customizable sizes and precision settings.
+
+- Measure: Launches several benchmarks on different kernels, with adjustable sizes, precision settings, and additional options such as generating graphs depicting the run results or altering the result metric.
+
+- Rank Update: Conducts multiple benchmarks on diverse kernels, where the matrix size (for this matrix multiply : A [mxk] x B[kxm] = C [mxm]) evolves according to this pattern: for each value of k ranging from 1 to 32, m varies from 500 to 3000 in increments of 100. This command also includes options like generating graphs based on the obtained results.
+
 Usage: ./gpuXmm.sh [cmd] {options} [args]"
 
-cmd:
-    check       : check matrix multiply output
-    measure     : run normal benchmarks
-    rank-update : run a rank update benchmark
+cmd: check, measure, rank-update 
 
 ### Python script
 
@@ -85,27 +91,22 @@ plot_gen_rankupdate.py :
 
 ## Kernel List
 
-On AMD :
+The kernels depend on the availability of the corresponding APIs on your machine. For example, if you have HIP installed on your machine, you can utilize the HIP kernel. The available kernels must be listed in the 'kernels_available.config' file so that they can be recognized by the 'gpuXmm.sh' script. The 'setup.sh' script typically fill the valid kernels in the file if the corresponding API is installed on your machine. However, if it fails to detect them, you can manually write them into the file.
+
+All available kernels :
 
 - basis 
 - cpu_omp 
 - cblas 
+- armpl
 - gpu_omp 
 - gpu_omp_wo_dt 
 - hip 
 - hip_wo_dt 
 - rocblas 
 - rocblas_wo_dt
-
-On NVIDIA :
-
-- basis 
-- cpu_omp 
-- cblas 
-- gpu_omp 
-- gpu_omp_wo_dt 
-- openacc 
-- openacc_wo_dt 
+- acc 
+- acc_wo_dt 
 - cuda 
 - cuda_wo_dt 
 - cublas
@@ -129,7 +130,7 @@ will run a 3 benchmark (RDTSC Cycles metric) of the kernel basis hip and rocblas
 ```bash
 ./gpuXmm measure -m100 -p26 -a
 ```
-will run all kernels (GFLOPS/s metric) for c[100x100] = a[100x26] * b[26x100]
+will run all available kernels (GFLOPS/s metric) for c[100x100] = a[100x26] * b[26x100]
 
 Use the '-h' option for more information
 
@@ -139,7 +140,7 @@ Use the '-h' option for more information
 ```bash
 ./gpuXmm check -m100 -a
 ```
-will check all kernels for a 100x100 matrix and compare it with the basis kernel
+will check all available kernels for a 100x100 matrix and compare it with the basis kernel
 
 Use the '-h' option for more information
 
