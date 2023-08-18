@@ -37,7 +37,7 @@ echo_plot_line()
 echo_save_line()
 {
   echo "    -s,--save={save_file} : save the measure output in the file in argument"
-  echo "                            (default: save_file=./output/measure/measure_DATE.png)"
+  echo "                            (default: save_file=./output/measure/measure_DATE.csv)"
 }
 echo_prof_line()
 {
@@ -269,7 +269,7 @@ init_option_var()
   
   if [ $cmd == "measure" ]; then
     plot_file="$WORKDIR/output/graphs/graph_$(date +%F-%T).png"
-    save_file="$WORKDIR/output/measure/measure_$(date +%F-%T).out"
+    save_file="$WORKDIR/output/measure/measure_$(date +%F-%T).csv"
   elif [ $cmd == "check" ]; then
     kernel_list=("${kernel_list[@]:1}")
   fi
@@ -360,7 +360,7 @@ run_rank_update()
       cat $measure_tmp_file
       echo "---------------------"
 
-      save_file="$WORKDIR/output/measure/rank_update_"$kernel_lowercase"_"$precision"_$(date +%F-%T).out"
+      save_file="$WORKDIR/output/measure/rank_update_"$kernel_lowercase"_"$precision"_$(date +%F-%T).csv"
       mv $measure_tmp_file $save_file
     done
     eval make clean --quiet
