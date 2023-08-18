@@ -471,7 +471,9 @@ run_measure()
 
 setup_measure_tmp_file()
 {
-  measure_tmp_file=$WORKDIR/output/tmp/measure_tmp.out
+  num_file=$(ls -1 $WORKDIR/output/tmp/ | grep "measure_tmp" | wc -l)
+  num_file=$(( $num_file + 1 ))
+  measure_tmp_file=$WORKDIR/output/tmp/measure_tmp_$num_file.out
   if [[ -f $measure_tmp_file ]]; then
   rm $measure_tmp_file
   fi
