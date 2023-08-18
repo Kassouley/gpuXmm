@@ -51,7 +51,7 @@ LFLAGS = $(OMP_FLAG) -lm
 ifeq ($(KERNEL),CBLAS)
 	LFLAGS += -lblas
 else ifeq ($(KERNEL),MKL)
-	LFLAGS += -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lm
+	LFLAGS += -lmkl_rt -lm
 else ifneq ($(IS_KERNEL_ROCBLAS),)
 	LFLAGS += -lrocblas  -L/opt/rocm-5.4.3/rocblas/lib/librocblas.so  -I/opt/rocm-5.4.3/include/
 else ifneq ($(IS_KERNEL_CUBLAS),)

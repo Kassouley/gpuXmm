@@ -99,7 +99,7 @@ All available kernels :
 - cpu_omp 
 - cblas 
 - armpl
-- mkl
+- mkl (note : multi-core)
 - gpu_omp 
 - gpu_omp_wo_dt 
 - hip 
