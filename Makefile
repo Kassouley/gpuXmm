@@ -2,7 +2,7 @@
 GPU = AMD
 PRECISION = DP
 
-IS_KERNEL_CPU 		:= $(filter $(KERNEL), BASIS CPU_OMP CBLAS ARMPL)
+IS_KERNEL_CPU 		:= $(filter $(KERNEL), BASIS CPU_OMP CBLAS ARMPL MKL)
 IS_KERNEL_OMP 		:= $(filter $(KERNEL), GPU_OMP GPU_OMP_WO_DT)
 IS_KERNEL_ACC 		:= $(filter $(KERNEL), ACC ACC_WO_DT)
 IS_KERNEL_HIP 		:= $(filter $(KERNEL), HIP HIP_WO_DT)
@@ -23,7 +23,7 @@ else
 	ifeq ($(GPU), AMD)
 		CC=/opt/rocm/llvm/bin/clang
 	else ifeq ($(GPU), NVIDIA)
-		CC=nvc
+		CC=gcc
 	endif
 endif
 OMP_FLAG ?= -fopenmp
@@ -50,6 +50,8 @@ CFLAGS = -g -O3
 LFLAGS = $(OMP_FLAG) -lm
 ifeq ($(KERNEL),CBLAS)
 	LFLAGS += -lblas
+else ifeq ($(KERNEL),MKL)
+	LFLAGS += -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lm
 else ifneq ($(IS_KERNEL_ROCBLAS),)
 	LFLAGS += -lrocblas  -L/opt/rocm-5.4.3/rocblas/lib/librocblas.so  -I/opt/rocm-5.4.3/include/
 else ifneq ($(IS_KERNEL_CUBLAS),)
@@ -97,7 +99,7 @@ KERNEL_DIR=$(SRC_DIR)/kernel
 BENCH_DIR=$(SRC_DIR)/bench
 CHECK_DIR=$(SRC_DIR)/check
 
-IS_KERNEL_IN_C 			:= $(filter $(KERNEL), BASIS CPU_OMP CBLAS ARMPL GPU_OMP ACC)
+IS_KERNEL_IN_C 			:= $(filter $(KERNEL), BASIS CPU_OMP CBLAS ARMPL MKL GPU_OMP ACC)
 IS_KERNEL_IN_C_WO_DT 	:= $(filter $(KERNEL), GPU_OMP_WO_DT ACC_WO_DT)
 IS_KERNEL_IN_CPP 		:= $(filter $(KERNEL), HIP ROCBLAS CUDA CUBLAS)
 IS_KERNEL_IN_CPP_WO_DT 	:= $(filter $(KERNEL), HIP_WO_DT ROCBLAS_WO_DT CUDA_WO_DT CUBLAS_WO_DT)

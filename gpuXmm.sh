@@ -471,9 +471,9 @@ run_measure()
 
 setup_measure_tmp_file()
 {
-  num_file=$(ls -1 $WORKDIR/output/tmp/ | grep "measure_tmp" | wc -l)
-  num_file=$(( $num_file + 1 ))
-  measure_tmp_file=$WORKDIR/output/tmp/measure_tmp_$num_file.out
+  # num_file=$(ls -1 $WORKDIR/output/tmp/ | grep "measure_tmp" | wc -l)
+  # num_file=$(( $num_file + 1 ))
+  measure_tmp_file=$WORKDIR/output/tmp/measure_tmp.out
   if [[ -f $measure_tmp_file ]]; then
   rm $measure_tmp_file
   fi
@@ -507,29 +507,55 @@ summary_measure()
   fi
 }
 
-calculate_repetitions() 
+compute_warmup() 
 {
     local matrix_size=$(( $1 * $2 ))
+    local max_warm=1000
+    local min_warm=3
+    local max_matrix_size=$(( 500 * 500 ))
+    local min_matrix_size=$(( 10 * 10 ))
 
-    if [ $matrix_size -gt 1000000 ]; then
-      echo 50
-    elif [ $matrix_size -lt 100 ]; then
-      echo 1000
-    else    
-      local x_min=100
-    local x_max=1000000
-    local y_min=500
-    local y_max=50
+    if [ $matrix_size -gt $max_matrix_size ]; then
+      echo $min_warm
+    elif [ $matrix_size -lt $min_matrix_size ]; then
+      echo $max_warm
+    else 
+      distance_to_X=$(( $max_matrix_size - $matrix_size ))
+      distance_to_Y=$(( $matrix_size - $min_matrix_size ))
 
-    echo $(( ($y_max - $y_min) * ($matrix_size - $x_min) / ($x_max - $x_min) + $y_min ))
+      if [[ $distance_to_X < $distance_to_Y ]]; then
+          nb_warm=$(echo "scale=2; $min_warm - ($distance_to_X / ($max_matrix_size - $min_matrix_size)) * ($min_warm - $max_warm)" | bc | awk '{print int($1)}')
+      else
+          nb_warm=$(echo "scale=2; $max_warm + ($distance_to_Y / ($max_matrix_size - $min_matrix_size)) * ($min_warm - $max_warm)" | bc | awk '{print int($1)}')
+      fi
+      echo $nb_warm
     fi
 }
+
+compute_nb_rep()
+{
+    local matrix_size=$(( $1 * $2 ))
+    local matrix_size_step_1=$(( 100 * 100 ))
+    local matrix_size_step_2=$(( 500 * 500 ))
+    local matrix_size_step_3=$(( 1000 * 1000 ))
+
+    if [ $matrix_size -lt $matrix_size_step_1 ]; then
+      echo 1000
+    elif [ $matrix_size -lt $matrix_size_step_2 ]; then
+      echo 100
+    elif [ $matrix_size -lt $matrix_size_step_3 ]; then
+      echo 10
+    else 
+      echo 3
+    fi
+}
+
 measure_kernel()
 {
   echo -e "Benchmark kernel $kernel_lowercase ($precision) ($matrix_multiply_label) . . ."
   is_stab_ok=false
-  warmup=1000
-  rep=100
+  warmup=$(compute_warmup $1 $3)
+  rep=$(compute_nb_rep $1 $3)
 
   while [[ $is_stab_ok == false ]] ; do
     cmd="$WORKDIR/measure $1 $2 $3 $warmup $rep"
