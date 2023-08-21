@@ -23,7 +23,7 @@ else
 	ifeq ($(GPU), AMD)
 		CC=/opt/rocm/llvm/bin/clang
 	else ifeq ($(GPU), NVIDIA)
-		CC=gcc
+		CC=nvc
 	endif
 endif
 OMP_FLAG ?= -fopenmp
@@ -50,6 +50,8 @@ CFLAGS = -g -O3
 LFLAGS = $(OMP_FLAG) -lm
 ifeq ($(KERNEL),CBLAS)
 	LFLAGS += -lblas
+else ifeq ($(KERNEL),ARMPL)
+	LFLAGS += -larmpl_mp
 else ifeq ($(KERNEL),MKL)
 	LFLAGS += -lmkl_rt -lm
 else ifneq ($(IS_KERNEL_ROCBLAS),)
@@ -63,7 +65,7 @@ endif
 ifeq ($(KERNEL),CPU_OMP)
 	OPT_FLAGS=-fopenmp
 else ifeq ($(KERNEL),ARMPL)
-	OPT_FLAGS=-armpl
+	OPT_FLAGS=
 else ifneq ($(IS_KERNEL_OMP),)
 	ifeq ($(GPU), AMD)
 		OPT_FLAGS=-fopenmp=libomp -target x86_64-pc-linux-gnu \
