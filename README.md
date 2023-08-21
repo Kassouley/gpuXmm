@@ -1,6 +1,6 @@
 
 # Matrix Multiply Benchmark
-Matrix Multiply Benchmark on GPU and CPU using OpenMP, OpenACC, HIP, rocBLAS, CUDA, cuBLAS
+Matrix Multiply Benchmark on GPU and CPU using OpenMP, OpenACC, HIP, rocBLAS, CUDA, cuBLAS, MKL and ARMpl
 
 
 ## Author
@@ -99,6 +99,7 @@ All available kernels :
 - cpu_omp 
 - cblas 
 - armpl
+- mkl (note : multi-core)
 - gpu_omp 
 - gpu_omp_wo_dt 
 - hip 

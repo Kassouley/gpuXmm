@@ -46,9 +46,11 @@ void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p,
                     const gpuXmm_precision_t* a, const gpuXmm_precision_t* b, gpuXmm_precision_t* c)
 {
     #ifdef SP
-    cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, p, n, 1.0, a, n, b, p, 0.0, c, p);
+    cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 
+                m, p, n, 1.0, a, n, b, p, 0.0, c, p);
     #else //DP
-    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, p, n, 1.0, a, n, b, p, 0.0, c, p);
+    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 
+                m, p, n, 1.0, a, n, b, p, 0.0, c, p);
     #endif
 }
 #endif
@@ -66,6 +68,21 @@ void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p,
     sgemm_("N", "N", &pp, &mm, &nn, &alpha, b, &pp, a, &nn, &beta, c, &pp);
     #else //DP
     dgemm_("N", "N", &pp, &mm, &nn, &alpha, b, &pp, a, &nn, &beta, c, &pp);
+    #endif
+}
+#endif
+
+#ifdef MKL
+#include <mkl.h>
+void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p, 
+                    const gpuXmm_precision_t* a, const gpuXmm_precision_t* b, gpuXmm_precision_t* c)
+{
+    #ifdef SP
+    cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+                m, p, n, 1.0, a, n, b, p, 0.0, c, p);    
+    #else //DP
+    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+                m, p, n, 1.0, a, n, b, p, 0.0, c, p);
     #endif
 }
 #endif
