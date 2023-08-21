@@ -528,8 +528,8 @@ measure_kernel()
 {
   echo -e "Benchmark kernel $kernel_lowercase ($precision) ($matrix_multiply_label) . . ."
   is_stab_ok=false
-  warmup=1000
-  rep=100
+  warmup=1
+  rep=1
 
   while [[ $is_stab_ok == false ]] ; do
     cmd="$WORKDIR/measure $1 $2 $3 $warmup $rep"
