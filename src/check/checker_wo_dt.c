@@ -46,6 +46,7 @@ int main(int argc, char **argv)
     gpuXmm_precision_t* d_b;
     gpuXmm_precision_t* d_c;
 
+
 	gpuXmm_malloc(d_a, size_a);
 	gpuXmm_malloc(d_b, size_b);
 	gpuXmm_malloc(d_c, size_c);
