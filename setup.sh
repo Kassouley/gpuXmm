@@ -7,7 +7,6 @@ setup_output()
     mkdir ./output/
     mkdir ./output/check
     mkdir ./output/graphs
-    mkdir ./output/graphs/warmup
     mkdir ./output/measure
     mkdir ./output/profiler
     mkdir ./output/tmp

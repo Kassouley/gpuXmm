@@ -540,7 +540,7 @@ compute_nb_rep()
     local matrix_size_step_3=$(( 1000 * 1000 ))
 
     if [ $matrix_size -lt $matrix_size_step_1 ]; then
-      echo 1000
+      echo 10000
     elif [ $matrix_size -lt $matrix_size_step_2 ]; then
       echo 100
     elif [ $matrix_size -lt $matrix_size_step_3 ]; then

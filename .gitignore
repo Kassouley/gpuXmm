@@ -9,3 +9,4 @@ measure
 check
 kernels_avail.config
 *.slurm
+devtools/
