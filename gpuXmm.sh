@@ -480,7 +480,7 @@ setup_measure_tmp_file()
   if [ $metric_format == "RDTSC-Cycles"  ]; then
     echo "          kernel ,  prs ,     m ,     n ,     p ,        minimum ,         median ,      median/it ,   stab (%)" > $measure_tmp_file
   else
-    echo "          kernel ,  prs ,     m ,     n ,     p ,        GLOPS/s ,   minimum (ms) ,     median (ms),   stab (%)" > $measure_tmp_file
+    echo "          kernel ,  prs ,     m ,     n ,     p ,       GFLOPS/s ,   minimum (ms) ,     median (ms),   stab (%)" > $measure_tmp_file
   fi
 }
 
