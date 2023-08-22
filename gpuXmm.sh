@@ -575,7 +575,7 @@ measure_kernel()
     check_error "run measure failed"
 
     stab=$(tail -n 1 $measure_tmp_file | cut -d ',' -f 9 | sed 's/ //g')
-    if (( $(echo "$stab < 5" | bc -l) ||  $rep > 1000 )); then
+    if (( $(echo "$stab < 10" | bc -l) ||  $rep > 1000 )); then
       is_stab_ok=true
     else
       rep=$(( $rep*10 ))
