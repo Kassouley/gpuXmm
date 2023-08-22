@@ -352,7 +352,7 @@ run_rank_update()
 
       plot_file="$WORKDIR/output/graphs/graph_"$kernel_lowercase"_"$precision"_$(date +%F-%T).png"
       echo "Plot generation . . ."
-      python3 ./python/plot_gen_rankupdate_.py $measure_tmp_file $plot_file
+      python3 ./python/plot_gen_rankupdate.py $measure_tmp_file $plot_file
       echo "Plot created in file $plot_file"
 
       echo "---------------------"
@@ -546,7 +546,7 @@ compute_nb_rep()
     elif [ $matrix_size -lt $matrix_size_step_3 ]; then
       echo 10
     else 
-      echo 3
+      echo 5
     fi
 }
 

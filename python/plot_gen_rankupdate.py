@@ -22,6 +22,9 @@ def parse_data(file_path):
     return gflops_by_k, kernel, prs
 
 if __name__ == "__main__":
+    if len(sys.argv) < 3:
+        print("Usage: python script.py <input_file> <output_file>")
+        sys.exit(1)
     file_path = sys.argv[1]
     gflops_by_k, kernel, prs = parse_data(file_path)
 
@@ -35,7 +38,7 @@ if __name__ == "__main__":
 
 
     plt.xlabel("m")
-    plt.ylabel("GFLOPS/S")
+    plt.ylabel("GFLOPS/s")
     plt.title(f"Average performance of {kernel} ({prs}) for a A(mxk)*B(kxm) matrix multiply on 31 meta-rep")
     plt.legend(bbox_to_anchor=(1.02, 1), loc="upper left", ncol=2)
     plt.tight_layout() 
