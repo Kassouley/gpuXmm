@@ -13,14 +13,14 @@ cmd=$@
 
 echo "Chargement des modules"
 module purge
-module load arm
-module load acfl/23.04
+#module load arm
+#module load acfl/23.04
 
 module load nvidia
 module load nvhpc/23.1
 module load python-tools/3.10.9
 # module load gnu/12.2.0
-#module load openblas/gnu/0.3.21
+module load openblas/gnu/0.3.21
 echo "Chargement des modules terminés"
 
 eval $cmd
