@@ -4,7 +4,7 @@
 #ifdef USETX    
     #ifdef AMD
         #include <roctracer/roctx.h>
-        
+
         #define gpuXmmtx_rangePush(name) \
         { \
             roctxRangePush(name); \
@@ -16,7 +16,7 @@
     #endif
 
     #ifdef NVIDIA
-        #include <nvtx3/nvToolsExt.h>
+        #include <nvToolsExt.h>
 
         #define gpuXmmtx_rangePush(name) \
         { \

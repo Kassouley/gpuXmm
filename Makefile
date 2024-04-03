@@ -35,7 +35,7 @@ INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
 # ----------------- CPP FLAGS----------------- #
 
-CPPFLAGS=$(INC_FLAGS) -D $(KERNEL) -D $(PRECISION) -D $(GPU) 
+CPPFLAGS=$(INC_FLAGS) -D $(KERNEL) -D $(PRECISION) -D $(GPU) -D $(USETX) 
 
 ifeq ($(METRIC), RDTSC-Cycles)
 	CPPFLAGS += -D __GPUXMM_RDTSC_ENABLE
@@ -62,9 +62,9 @@ endif
 
 ifeq ($(USETX),USETX)
 	ifeq ($(GPU), AMD)
-		LFLAGS += -D $(USETX) -lroctx64 -lroctracer64 
+		LFLAGS += -lroctx64 -lroctracer64 
 	else ifeq ($(GPU), NVIDIA)
-		LFLAGS += -D $(USETX) -lnvToolsExt -ldl
+		LFLAGS += -lnvToolsExt -ldl
 	endif
 endif
 
