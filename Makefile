@@ -43,7 +43,7 @@ endif
 
 # ------------------ CFLAGS ------------------ #
 
-CFLAGS = -g -O3 -D $(USETX) -lroctx64 -lroctracer64 
+CFLAGS = -g -O3 
 
 # ------------------ LFLAGS ------------------ #
 
@@ -59,6 +59,15 @@ else ifneq ($(IS_KERNEL_ROCBLAS),)
 else ifneq ($(IS_KERNEL_CUBLAS),)
 	LFLAGS += -lcublas
 endif
+
+ifeq ($(USETX),USETX)
+	ifeq ($(GPU), AMD)
+		LFLAGS += -D $(USETX) -lroctx64 -lroctracer64 
+	else ifeq ($(GPU), NVIDIA)
+		LFLAGS += -D $(USETX) -lnvToolsExt
+	endif
+endif
+
 
 # ----------------- OPT_FLAGS ----------------- #
 
