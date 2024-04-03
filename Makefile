@@ -64,7 +64,7 @@ ifeq ($(USETX),USETX)
 	ifeq ($(GPU), AMD)
 		LFLAGS += -D $(USETX) -lroctx64 -lroctracer64 
 	else ifeq ($(GPU), NVIDIA)
-		LFLAGS += -D $(USETX) -lnvToolsExt
+		LFLAGS += -D $(USETX) -lnvToolsExt -ldl
 	endif
 endif
 
