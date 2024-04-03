@@ -253,7 +253,7 @@ get_kernels_to_run()
 build_driver()
 {
   eval_verbose echo "Build $kernel_lowercase kernel . . . "
-  eval_verbose make $1 -B GPU=$GPU KERNEL=$kernel_uppercase METRIC=$metric_format PRECISION=$precision
+  eval_verbose make $1 -B GPU=$GPU KERNEL=$kernel_uppercase METRIC=$metric_format PRECISION=$precision USETX=$usetx
   check_error "make failed"
 }
 
@@ -263,6 +263,7 @@ init_option_var()
   force=0
   all=0
   profiler=0
+  usetx="NOUSETX"
   plot=0
   save=0
   metric_format="GFLOPS/s"
@@ -292,7 +293,7 @@ check_option()
           -f|--force) force=1 ; shift ;;
           -a|--all) kernel_to_run=${kernel_list[@]} ; shift ;;
           -v|--verbose) verbose=1 ; shift ;;
-          -P|--profiler) profiler=1 ; shift ;;
+          -P|--profiler) profiler=1 ; usetx="USETX" ; shift ;;
           -r|--rdtsc) metric_format="RDTSC-Cycles" ; shift ;;
           -m|-n|-p) matrix_dim+=($2); shift 2 ;;
           -S|--SP) precision_list+=("SP") ; shift ;;
@@ -411,7 +412,7 @@ check_kernel()
     mkdir $WORKDIR/output/profiler/$profiler_dir
     case "$GPU" in
         "NVIDIA") eval "nsys profile -o $WORKDIR/output/profiler/$profiler_dir/$profiler_file-rep $cmd" ;;
-        "AMD") eval "rocprof --hip-trace --hsa-trace -o $WORKDIR/output/profiler/$profiler_dir/$profiler_file.csv $cmd" ;;
+        "AMD") eval "rocprof --hip-trace --roctx-trace -o $WORKDIR/output/profiler/$profiler_dir/$profiler_file.csv $cmd" ;;
     esac
   else
     eval $cmd
@@ -509,45 +510,51 @@ summary_measure()
 
 compute_warmup() 
 {
-    local matrix_size=$(( $1 * $2 ))
-    local max_warm=1000
-    local min_warm=3
-    local max_matrix_size=$(( 500 * 500 ))
-    local min_matrix_size=$(( 10 * 10 ))
+    # local matrix_size=$(( $1 * $2 ))
+    # local max_warm=1000
+    # local min_warm=3
+    # local max_matrix_size=$(( 500 * 500 ))
+    # local min_matrix_size=$(( 10 * 10 ))
 
-    if [ $matrix_size -gt $max_matrix_size ]; then
-      echo $min_warm
-    elif [ $matrix_size -lt $min_matrix_size ]; then
-      echo $max_warm
-    else 
-      distance_to_X=$(( $max_matrix_size - $matrix_size ))
-      distance_to_Y=$(( $matrix_size - $min_matrix_size ))
+    # if [ $matrix_size -gt $max_matrix_size ]; then
+    #   echo $min_warm
+    # elif [ $matrix_size -lt $min_matrix_size ]; then
+    #   echo $max_warm
+    # else 
+    #   distance_to_X=$(( $max_matrix_size - $matrix_size ))
+    #   distance_to_Y=$(( $matrix_size - $min_matrix_size ))
 
-      if [[ $distance_to_X < $distance_to_Y ]]; then
-          nb_warm=$(echo "scale=2; $min_warm - ($distance_to_X / ($max_matrix_size - $min_matrix_size)) * ($min_warm - $max_warm)" | bc | awk '{print int($1)}')
-      else
-          nb_warm=$(echo "scale=2; $max_warm + ($distance_to_Y / ($max_matrix_size - $min_matrix_size)) * ($min_warm - $max_warm)" | bc | awk '{print int($1)}')
-      fi
-      echo $nb_warm
-    fi
+    #   if [[ $distance_to_X < $distance_to_Y ]]; then
+    #       nb_warm=$(echo "scale=2; $min_warm - ($distance_to_X / ($max_matrix_size - $min_matrix_size)) * ($min_warm - $max_warm)" | bc | awk '{print int($1)}')
+    #   else
+    #       nb_warm=$(echo "scale=2; $max_warm + ($distance_to_Y / ($max_matrix_size - $min_matrix_size)) * ($min_warm - $max_warm)" | bc | awk '{print int($1)}')
+    #   fi
+    #   echo $nb_warm
+    # fi
+
+    #TODO REMOVE THIS TEST LINE :
+    echo 5
 }
 
 compute_nb_rep()
 {
-    local matrix_size=$(( $1 * $2 ))
-    local matrix_size_step_1=$(( 100 * 100 ))
-    local matrix_size_step_2=$(( 500 * 500 ))
-    local matrix_size_step_3=$(( 1000 * 1000 ))
+    # local matrix_size=$(( $1 * $2 ))
+    # local matrix_size_step_1=$(( 100 * 100 ))
+    # local matrix_size_step_2=$(( 500 * 500 ))
+    # local matrix_size_step_3=$(( 1000 * 1000 ))
 
-    if [ $matrix_size -lt $matrix_size_step_1 ]; then
-      echo 10000
-    elif [ $matrix_size -lt $matrix_size_step_2 ]; then
-      echo 100
-    elif [ $matrix_size -lt $matrix_size_step_3 ]; then
-      echo 10
-    else 
-      echo 5
-    fi
+    # if [ $matrix_size -lt $matrix_size_step_1 ]; then
+    #   echo 10000
+    # elif [ $matrix_size -lt $matrix_size_step_2 ]; then
+    #   echo 100
+    # elif [ $matrix_size -lt $matrix_size_step_3 ]; then
+    #   echo 10
+    # else 
+    #   echo 5
+    # fi
+
+    #TODO REMOVE THIS TEST LINE :
+    echo 5
 }
 
 measure_kernel()
@@ -567,7 +574,7 @@ measure_kernel()
       mkdir $WORKDIR/output/profiler/$profiler_dir
       case "$GPU" in
           "NVIDIA") eval "nsys profile -o $WORKDIR/output/profiler/$profiler_dir/$profiler_file-rep $cmd" ;;
-          "AMD") eval "rocprof --hip-trace --hsa-trace -o $WORKDIR/output/profiler/$profiler_dir/$profiler_file.csv $cmd" ;;
+          "AMD") eval "rocprof --hip-trace --roctx-trace -o $WORKDIR/output/profiler/$profiler_dir/$profiler_file.csv $cmd" ;;
       esac
     else
       eval $cmd

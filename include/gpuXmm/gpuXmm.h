@@ -1,6 +1,7 @@
 #ifndef GPUBLAS_H
 #define GPUBLAS_H
     #include "gpuXmm_precision.h"
+    #include "gpuXmmtx.h"
 
     #if defined(HIP) || defined(HIP_WO_DT) || defined(ROCBLAS) || defined(ROCBLAS_WO_DT)
     #include "gpuXmm_hip.h"

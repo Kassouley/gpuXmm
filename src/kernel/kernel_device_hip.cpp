@@ -23,6 +23,7 @@ __global__ void kernel_gpuXmm_aux (unsigned int m, unsigned int n, unsigned int 
 void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p, 
                     const gpuXmm_precision_t* a, const gpuXmm_precision_t* b, gpuXmm_precision_t* c)
 {
+    gpuXmmtx_rangePush("gpuXmmtx_kernel_gpuXmm_HIP");
     int size_a = m * n * sizeof(gpuXmm_precision_t);
     int size_b = n * p * sizeof(gpuXmm_precision_t);
     int size_c = m * p * sizeof(gpuXmm_precision_t);
@@ -31,12 +32,22 @@ void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p,
     gpuXmm_precision_t* d_b;
     gpuXmm_precision_t* d_c;
 
+    gpuXmmtx_rangePush("gpuXmmtx_hipMalloc_a");
     hipMalloc((void**)&d_a, size_a);
+    gpuXmmtx_rangePop();
+    gpuXmmtx_rangePush("gpuXmmtx_hipMalloc_b");
     hipMalloc((void**)&d_b, size_b);
+    gpuXmmtx_rangePop();
+    gpuXmmtx_rangePush("gpuXmmtx_hipMalloc_c");
     hipMalloc((void**)&d_c, size_c);
+    gpuXmmtx_rangePop();
 
+    gpuXmmtx_rangePush("gpuXmmtx_hipMemcpy_a");
     hipMemcpy(d_a, a, size_a, hipMemcpyHostToDevice);
+    gpuXmmtx_rangePop();
+    gpuXmmtx_rangePush("gpuXmmtx_hipMemcpy_b");
     hipMemcpy(d_b, b, size_b, hipMemcpyHostToDevice);
+    gpuXmmtx_rangePop();
 
     dim3 blockDim (m, p);
     dim3 gridDim (1,1);
@@ -51,13 +62,24 @@ void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p,
         gridDim.y = ceil(double(p)/double(blockDim.y));
     }
 
+    gpuXmmtx_rangePush("gpuXmmtx_kernel_gpuXmm_HIP_bis");
     hipLaunchKernelGGL(kernel_gpuXmm_aux, gridDim, blockDim, 0, 0, m, n, p, d_a, d_b, d_c);
+    gpuXmmtx_rangePop();
         
+    gpuXmmtx_rangePush("gpuXmmtx_hipMemcpy_c");
     hipMemcpy(c, d_c, size_c, hipMemcpyDeviceToHost);
+    gpuXmmtx_rangePop();
 
+    gpuXmmtx_rangePush("gpuXmmtx_hipFree_a");
     hipFree(d_a);
+    gpuXmmtx_rangePop();
+    gpuXmmtx_rangePush("gpuXmmtx_hipFree_b");
     hipFree(d_b);
+    gpuXmmtx_rangePop();
+    gpuXmmtx_rangePush("gpuXmmtx_hipFree_c");
     hipFree(d_c);
+    gpuXmmtx_rangePop();
+    gpuXmmtx_rangePop();
 }
 #endif
 
@@ -65,6 +87,7 @@ void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p,
 void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p, 
                     const gpuXmm_precision_t* a, const gpuXmm_precision_t* b, gpuXmm_precision_t* c)
 {
+    gpuXmmtx_rangePush("gpuXmmtx_kernel_gpuXmm_HIP_wo_dt");
     dim3 blockDim (m, p);
     dim3 gridDim (1,1);
     if ( m > 32 )
@@ -78,6 +101,9 @@ void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p,
         gridDim.y = ceil(double(p)/double(blockDim.y));
     }
 
+    gpuXmmtx_rangePush("gpuXmmtx_kernel_gpuXmm_HIP_wo_dt_bis");
     hipLaunchKernelGGL(kernel_gpuXmm_aux, gridDim, blockDim, 0, 0, m, n, p, a, b, c);
+    gpuXmmtx_rangePop();
+    gpuXmmtx_rangePop();
 }
 #endif

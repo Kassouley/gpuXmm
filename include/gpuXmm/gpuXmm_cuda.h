@@ -19,39 +19,53 @@ typedef cublasHandle_t gpuXmm_handle_t;
 
 #define gpuXmm_handle_create(handle) \
 {\
+    gpuXmmtx_rangePush("gpuXmmtx_cublasCreate"); \
     cublasCreate(&handle);\
+    gpuXmmtx_rangePop(); \
 }
 
 #define gpuXmm_handle_destroy(handle) \
 {\
+    gpuXmmtx_rangePush("gpuXmmtx_cublasDestroy"); \
     cublasDestroy(handle);\
+    gpuXmmtx_rangePop(); \
 }
 
 #endif
 
 #define gpuXmm_malloc(ptr, size) \
 {\
+    gpuXmmtx_rangePush("gpuXmmtx_cudaMalloc"); \
     CHECK(cudaMalloc(&ptr, size));\
+    gpuXmmtx_rangePop(); \
 }
 
 #define gpuXmm_free(ptr) \
 {\
+    gpuXmmtx_rangePush("gpuXmmtx_cudaFree"); \
     CHECK(cudaFree(ptr));\
+    gpuXmmtx_rangePop(); \
 }
 
 #define gpuXmm_memcpy_HtD(dst, src, size) \
 {\
+    gpuXmmtx_rangePush("gpuXmmtx_cudaMemcpy_HtD"); \
     CHECK(cudaMemcpy(dst, src, size,cudaMemcpyHostToDevice));\
+    gpuXmmtx_rangePop(); \
 }
 
 #define gpuXmm_memcpy_DtH(dst, src, size) \
 {\
+    gpuXmmtx_rangePush("gpuXmmtx_cudaMemcpy_DtH"); \
     CHECK(cudaMemcpy(dst, src, size,cudaMemcpyDeviceToHost));\
+    gpuXmmtx_rangePop(); \
 }
 
 #define gpuXmm_deviceSynchronize() \
 {\
+    gpuXmmtx_rangePush("gpuXmmtx_cudaDeviceSynchronize"); \
     cudaDeviceSynchronize();\
+    gpuXmmtx_rangePop(); \
 }
 
 #endif

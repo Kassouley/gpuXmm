@@ -20,38 +20,52 @@
 
         #define gpuXmm_handle_create(handle) \
         {\
-            rocblas_create_handle(&handle);\
+            gpuXmmtx_rangePush("gpuXmmtx_rocblas_create_handle"); \
+            rocblas_create_handle(&handle); \
+            gpuXmmtx_rangePop(); \
         }
 
         #define gpuXmm_handle_destroy(handle) \
         {\
+            gpuXmmtx_rangePush("gpuXmmtx_rocblas_destroy_handle"); \
             rocblas_destroy_handle(handle);\
+            gpuXmmtx_rangePop(); \
         }
     #endif
 
     #define gpuXmm_malloc(ptr, size) \
     {\
+        gpuXmmtx_rangePush("gpuXmmtx_hipMalloc"); \
         CHECK(hipMalloc((void**)&ptr, size));\
+        gpuXmmtx_rangePop(); \
     }
 
     #define gpuXmm_free(ptr) \
     {\
+        gpuXmmtx_rangePush("gpuXmmtx_hipFree"); \
         CHECK(hipFree(ptr));\
+        gpuXmmtx_rangePop(); \
     }
 
     #define gpuXmm_memcpy_HtD(dst, src, size) \
     {\
+        gpuXmmtx_rangePush("gpuXmmtx_hipMemcpy_HtD"); \
         CHECK(hipMemcpy(dst, src, size, hipMemcpyHostToDevice));\
+        gpuXmmtx_rangePop(); \
     }
 
     #define gpuXmm_memcpy_DtH(dst, src, size) \
     {\
+        gpuXmmtx_rangePush("gpuXmmtx_hipMemcpy_DtH"); \
         CHECK(hipMemcpy(dst, src, size, hipMemcpyDeviceToHost));\
+        gpuXmmtx_rangePop(); \
     }
 
     #define gpuXmm_deviceSynchronize() \
     {\
-        hipDeviceSynchronize();\
+        gpuXmmtx_rangePush("gpuXmmtx_hipDeviceSynchronize"); \
+        CHECK(hipDeviceSynchronize()); \
+        gpuXmmtx_rangePop(); \
     }
 
 #endif
