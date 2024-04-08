@@ -1,7 +1,6 @@
 #ifndef __GPUXMMTX_H
 #define __GPUXMMTX_H
-
-#ifdef USETX    
+#ifdef USETX  
     #ifdef AMD
         #include <roctracer/roctx.h>
 

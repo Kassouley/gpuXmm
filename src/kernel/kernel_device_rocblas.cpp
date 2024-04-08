@@ -16,12 +16,12 @@ void kernel_gpuXmm (rocblas_handle handle, unsigned int m, unsigned int n, unsig
     gpuXmm_precision_t* d_b;
     gpuXmm_precision_t* d_c;
 
-    hipMalloc((void**)&d_a, size_a);
-    hipMalloc((void**)&d_b, size_b);
-    hipMalloc((void**)&d_c, size_c);
+    CHECK(hipMalloc((void**)&d_a, size_a));
+    CHECK(hipMalloc((void**)&d_b, size_b));
+    CHECK(hipMalloc((void**)&d_c, size_c));
 
-    hipMemcpy(d_a, a, size_a, hipMemcpyHostToDevice);
-    hipMemcpy(d_b, b, size_b, hipMemcpyHostToDevice);
+    CHECK(hipMemcpy(d_a, a, size_a, hipMemcpyHostToDevice));
+    CHECK(hipMemcpy(d_b, b, size_b, hipMemcpyHostToDevice));
 
     const gpuXmm_precision_t alpha = 1.0; 
     const gpuXmm_precision_t beta = 0.0;
@@ -34,11 +34,11 @@ void kernel_gpuXmm (rocblas_handle handle, unsigned int m, unsigned int n, unsig
                 p, m, n, &alpha, d_b, p, d_a, n, &beta, d_c, p); 
     #endif
 
-    hipMemcpy(c, d_c, size_c, hipMemcpyDeviceToHost);
+    CHECK(hipMemcpy(c, d_c, size_c, hipMemcpyDeviceToHost));
 
-    hipFree(d_a);
-    hipFree(d_b);
-    hipFree(d_c);
+    CHECK(hipFree(d_a));
+    CHECK(hipFree(d_b));
+    CHECK(hipFree(d_c));
 }
 #endif
 

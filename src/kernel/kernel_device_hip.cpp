@@ -33,20 +33,20 @@ void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p,
     gpuXmm_precision_t* d_c;
 
     gpuXmmtx_rangePush("gpuXmmtx_hipMalloc_a");
-    hipMalloc((void**)&d_a, size_a);
+    CHECK(hipMalloc((void**)&d_a, size_a));
     gpuXmmtx_rangePop();
     gpuXmmtx_rangePush("gpuXmmtx_hipMalloc_b");
-    hipMalloc((void**)&d_b, size_b);
+    CHECK(hipMalloc((void**)&d_b, size_b));
     gpuXmmtx_rangePop();
     gpuXmmtx_rangePush("gpuXmmtx_hipMalloc_c");
-    hipMalloc((void**)&d_c, size_c);
+    CHECK(hipMalloc((void**)&d_c, size_c));
     gpuXmmtx_rangePop();
 
     gpuXmmtx_rangePush("gpuXmmtx_hipMemcpy_a");
-    hipMemcpy(d_a, a, size_a, hipMemcpyHostToDevice);
+    CHECK(hipMemcpy(d_a, a, size_a, hipMemcpyHostToDevice));
     gpuXmmtx_rangePop();
     gpuXmmtx_rangePush("gpuXmmtx_hipMemcpy_b");
-    hipMemcpy(d_b, b, size_b, hipMemcpyHostToDevice);
+    CHECK(hipMemcpy(d_b, b, size_b, hipMemcpyHostToDevice));
     gpuXmmtx_rangePop();
 
     dim3 blockDim (m, p);
@@ -67,17 +67,17 @@ void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p,
     gpuXmmtx_rangePop();
         
     gpuXmmtx_rangePush("gpuXmmtx_hipMemcpy_c");
-    hipMemcpy(c, d_c, size_c, hipMemcpyDeviceToHost);
+    CHECK(hipMemcpy(c, d_c, size_c, hipMemcpyDeviceToHost));
     gpuXmmtx_rangePop();
 
     gpuXmmtx_rangePush("gpuXmmtx_hipFree_a");
-    hipFree(d_a);
+    CHECK(hipFree(d_a));
     gpuXmmtx_rangePop();
     gpuXmmtx_rangePush("gpuXmmtx_hipFree_b");
-    hipFree(d_b);
+    CHECK(hipFree(d_b));
     gpuXmmtx_rangePop();
     gpuXmmtx_rangePush("gpuXmmtx_hipFree_c");
-    hipFree(d_c);
+    CHECK(hipFree(d_c));
     gpuXmmtx_rangePop();
     gpuXmmtx_rangePop();
 }

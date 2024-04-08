@@ -35,9 +35,11 @@ void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p,
     gpuXmmtx_rangePush("gpuXmmtx_cudaMalloc_a");
 	CHECK(cudaMalloc(&d_a, size_a));
     gpuXmmtx_rangePop();
+
     gpuXmmtx_rangePush("gpuXmmtx_cudaMalloc_b");
     CHECK(cudaMalloc(&d_b, size_b));
     gpuXmmtx_rangePop();
+
     gpuXmmtx_rangePush("gpuXmmtx_cudaMalloc_c");
     CHECK(cudaMalloc(&d_c, size_c));
     gpuXmmtx_rangePop();
@@ -45,6 +47,7 @@ void kernel_gpuXmm (unsigned int m, unsigned int n, unsigned int p,
     gpuXmmtx_rangePush("gpuXmmtx_cudaMemcpy_a");
     CHECK(cudaMemcpy(d_a, a, size_a, cudaMemcpyHostToDevice));
     gpuXmmtx_rangePop();
+    
     gpuXmmtx_rangePush("gpuXmmtx_cudaMemcpy_b");
     CHECK(cudaMemcpy(d_b, b, size_b, cudaMemcpyHostToDevice));
     gpuXmmtx_rangePop();

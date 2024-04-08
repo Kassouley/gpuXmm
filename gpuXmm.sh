@@ -46,7 +46,7 @@ echo_prof_line()
 }
 echo_rdtsc_line()
 {
-  echo "    -r,--rdtsc           : print perfomance in RDTSC-Cycles instead of GFLOPS/s"
+  echo "    -r,--rdtsc            : print perfomance in RDTSC-Cycles instead of GFLOPS/s"
 }
 echo_force_line()
 {
@@ -56,6 +56,11 @@ echo_DPSP_line()
 {
   echo "    -S,--SP               : run simple precision matrix mul (cumultative with -D)"
   echo "    -D,--DP               : run double precision matrix mul (cumultative with -S)"
+}
+
+echo_TX_line()
+{
+  echo "    -t,--TX               : run code with rocTX or nvTX range options"
 }
 
 echo_option_lines()
@@ -73,6 +78,7 @@ echo_option_lines()
           s) echo_save_line ;;
           g) echo_plot_line ;;
           D) echo_DPSP_line ;;
+          t) echo_TX_line ;;
       esac
   done
 }
@@ -195,12 +201,12 @@ run_command()
     shift
     case $cmd in
         "check") 
-              opt_list_short="havDSPm:n:p:" ; 
-              opt_list="help,all,verbose,DP,SP,profiler" ; 
+              opt_list_short="havDSPtm:n:p:" ; 
+              opt_list="help,all,verbose,DP,SP,profiler,TX" ; 
               run_check $@ ;;
         "measure" ) 
-              opt_list_short="hfavPDSrm:n:p:s::g::" ; 
-              opt_list="help,all,verbose,DP,SP,profiler" ; 
+              opt_list_short="hfavPtDSrm:n:p:s::g::" ; 
+              opt_list="help,all,verbose,DP,SP,profiler,TX" ; 
               run_measure $@ ;;
         "rank-update") 
               opt_list_short="hafSDvr" ; 
@@ -253,7 +259,8 @@ get_kernels_to_run()
 build_driver()
 {
   eval_verbose echo "Build $kernel_lowercase kernel . . . "
-  eval_verbose make $1 -B GPU=$GPU KERNEL=$kernel_uppercase METRIC=$metric_format PRECISION=$precision USETX=$usetx
+  echo $kernel_uppercase
+  eval_verbose make $1 -B KERNEL=$kernel_uppercase METRIC=$metric_format PRECISION=$precision USETX=$usetx
   check_error "make failed"
 }
 
@@ -263,7 +270,7 @@ init_option_var()
   force=0
   all=0
   profiler=0
-  usetx="NOUSETX"
+  usetx="NO"
   plot=0
   save=0
   metric_format="GFLOPS/s"
@@ -293,9 +300,10 @@ check_option()
           -f|--force) force=1 ; shift ;;
           -a|--all) kernel_to_run=${kernel_list[@]} ; shift ;;
           -v|--verbose) verbose=1 ; shift ;;
-          -P|--profiler) profiler=1 ; usetx="USETX" ; shift ;;
+          -P|--profiler) profiler=1 ; shift ;;
+          -t|--TX) usetx="YES" ; shift ;;
           -r|--rdtsc) metric_format="RDTSC-Cycles" ; shift ;;
-          -m|-n|-p) matrix_dim+=($2); shift 2 ;;
+          -m|-n|-p) matrix_dim+=($2) ; shift 2 ;;
           -S|--SP) precision_list+=("SP") ; shift ;;
           -D|--DP) precision_list+=("DP") ; shift ;;
           -s|--save) 
@@ -383,7 +391,7 @@ run_check()
   for precision in ${precision_list[@]}
   do
     eval_verbose echo -e "Check base kernel . . ."
-    eval_verbose make check KERNEL=BASIS GPU=$GPU PRECISION=$precision -B
+    eval_verbose make check KERNEL=BASIS PRECISION=$precision -B
     check_error "make echoué"
     eval ./check $m $n $p "./output/check/check_basis_$precision.out"
     check_error "run failed"
@@ -412,7 +420,7 @@ check_kernel()
     mkdir $WORKDIR/output/profiler/$profiler_dir
     case "$GPU" in
         "NVIDIA") eval "nsys profile -o $WORKDIR/output/profiler/$profiler_dir/$profiler_file-rep $cmd" ;;
-        "AMD") eval "rocprof --hip-trace --roctx-trace -o $WORKDIR/output/profiler/$profiler_dir/$profiler_file.csv $cmd" ;;
+        "AMD") eval "rocprof --stats --roctx-trace -o $WORKDIR/output/profiler/$profiler_dir/$profiler_file.csv $cmd" ;;
     esac
   else
     eval $cmd

@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 	gpuXmm_malloc(d_b, size_b);
 
     gpuXmm_memcpy_HtD(d_a, a, size_a);
-    gpuXmm_memcpy_HtD(d_b, b, size_a);
+    gpuXmm_memcpy_HtD(d_b, b, size_b);
 
     for (unsigned int i_meta = 0; i_meta < NB_META; i_meta++)
     {
