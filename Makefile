@@ -145,10 +145,12 @@ else ifneq ($(HAS_CUDA),)
 		SRC_KERNEL  = $(KERNEL_GPU_ACC)
 	else ifeq ($(KERNEL_API),CUDA)
 		CC			= nvcc
+		CFLAGS 	   := $(patsubst -fopenmp,-Xcompiler -fopenmp, $(CFLAGS))
 		CFLAGS     += -gencode=arch=compute_52,code=sm_52 -gencode=arch=compute_60,code=sm_60 -gencode=arch=compute_61,code=sm_61 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_75,code=sm_75 -gencode=arch=compute_80,code=sm_80 -gencode=arch=compute_80,code=compute_80
 		SRC_KERNEL  = $(KERNEL_GPU_CUDA)
 	else ifeq ($(KERNEL_API),CUBLAS)
 		CC			= nvcc
+		CFLAGS	   := $(patsubst -fopenmp,-Xcompiler -fopenmp, $(CFLAGS))
 		CFLAGS     += -gencode=arch=compute_52,code=sm_52 -gencode=arch=compute_60,code=sm_60 -gencode=arch=compute_61,code=sm_61 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_75,code=sm_75 -gencode=arch=compute_80,code=sm_80 -gencode=arch=compute_80,code=compute_80
 		LFLAGS 	   += -lcublas
 		SRC_KERNEL  = $(KERNEL_GPU_CUBLAS)
