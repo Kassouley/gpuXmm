@@ -103,10 +103,10 @@ else ifeq ($(KERNEL_API), ARMPL)
 		
 # ---------------- ROCM COMP & FLAGS ---------------- #
 else ifneq ($(HAS_ROCM),)
-	ROCM_PATH 	   ?= /opt/rocm/
+	ROCM_PATH 	   ?= /opt/rocm
 	ROCM_GPUTARGET ?= amdgcn-amd-amdhsa
 
-	INSTALLED_GPU   = $(shell $(ROCM_PATH)/bin/offload_arch | grep -m 1 -E gfx[^0]{1})
+	INSTALLED_GPU   = $(shell $(ROCM_PATH)/bin/offload-arch | grep -m 1 -E gfx[^0]{1})
 	ROCM_GPU       ?= $(INSTALLED_GPU)
 
 	CFLAGS		   += -D AMD
