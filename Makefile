@@ -60,11 +60,15 @@ INC_FLAGS  := $(addprefix -I,$(INC_DIRS))
 CFLAGS += $(INC_FLAGS) 
 
 # ---------------- DFLAGS ---------------- #
-DFLAGS		= -D $(KERNEL) -D $(PRECISION) -D $(USETX) 
+DFLAGS		= -D $(KERNEL) -D $(PRECISION) 
 ifeq ($(METRIC), RDTSC-Cycles)
 	DFLAGS += -D __GPUXMM_RDTSC_ENABLE
 else
 	CFLAGS += -fopenmp
+endif
+
+ifeq ($(USETX), YES)
+	DFLAGS += -D USETX
 endif
 
 CFLAGS += $(DFLAGS)
@@ -80,7 +84,7 @@ ifeq ($(UNAMEP),ppc64le)
 endif
 
 HAS_ROCM := $(shell command -v rocm-smi 2> /dev/null)
-HAS_ROCM := $(shell command -v nvcc --version 2> /dev/null)
+HAS_CUDA := $(shell command -v nvcc --version 2> /dev/null)
 
 # ---------------- CPU COMP & FLAGS ---------------- #
 ifeq ($(KERNEL_API), CPU_OMP)
@@ -105,6 +109,8 @@ else ifneq ($(HAS_ROCM),)
 	INSTALLED_GPU   = $(shell $(ROCM_PATH)/bin/offload_arch | grep -m 1 -E gfx[^0]{1})
 	ROCM_GPU       ?= $(INSTALLED_GPU)
 
+	CFLAGS		   += -D AMD
+
 	ifeq ($(KERNEL_API),GPU_OMP)
 		CC          = $(ROCM_PATH)/llvm/bin/clang
 		CFLAGS 	   += -target $(CPUTARGET) -fopenmp -fopenmp-targets=$(ROCM_GPUTARGET) -Xopenmp-target=$(ROCM_GPUTARGET) -march=$(ROCM_GPU)
@@ -123,6 +129,8 @@ else ifneq ($(HAS_ROCM),)
 
 # ---------------- CUDA COMP & FLAGS ---------------- #
 else ifneq ($(HAS_CUDA),)
+	CFLAGS		   += -D NVIDIA
+
 	ifeq ($(KERNEL_API),GPU_OMP)
 		CC          = nvc
 		CFLAGS     += -fopenmp -mp=gpu -Minfo=mp

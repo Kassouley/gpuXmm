@@ -259,7 +259,6 @@ get_kernels_to_run()
 build_driver()
 {
   eval_verbose echo "Build $kernel_lowercase kernel . . . "
-  echo $kernel_uppercase
   eval_verbose make $1 -B KERNEL=$kernel_uppercase METRIC=$metric_format PRECISION=$precision USETX=$usetx
   check_error "make failed"
 }
