@@ -517,51 +517,45 @@ summary_measure()
 
 compute_warmup() 
 {
-    # local matrix_size=$(( $1 * $2 ))
-    # local max_warm=1000
-    # local min_warm=3
-    # local max_matrix_size=$(( 500 * 500 ))
-    # local min_matrix_size=$(( 10 * 10 ))
+    local matrix_size=$(( $1 * $2 ))
+    local max_warm=1000
+    local min_warm=3
+    local max_matrix_size=$(( 500 * 500 ))
+    local min_matrix_size=$(( 10 * 10 ))
 
-    # if [ $matrix_size -gt $max_matrix_size ]; then
-    #   echo $min_warm
-    # elif [ $matrix_size -lt $min_matrix_size ]; then
-    #   echo $max_warm
-    # else 
-    #   distance_to_X=$(( $max_matrix_size - $matrix_size ))
-    #   distance_to_Y=$(( $matrix_size - $min_matrix_size ))
+    if [ $matrix_size -gt $max_matrix_size ]; then
+      echo $min_warm
+    elif [ $matrix_size -lt $min_matrix_size ]; then
+      echo $max_warm
+    else 
+      distance_to_X=$(( $max_matrix_size - $matrix_size ))
+      distance_to_Y=$(( $matrix_size - $min_matrix_size ))
 
-    #   if [[ $distance_to_X < $distance_to_Y ]]; then
-    #       nb_warm=$(echo "scale=2; $min_warm - ($distance_to_X / ($max_matrix_size - $min_matrix_size)) * ($min_warm - $max_warm)" | bc | awk '{print int($1)}')
-    #   else
-    #       nb_warm=$(echo "scale=2; $max_warm + ($distance_to_Y / ($max_matrix_size - $min_matrix_size)) * ($min_warm - $max_warm)" | bc | awk '{print int($1)}')
-    #   fi
-    #   echo $nb_warm
-    # fi
-
-    #TODO REMOVE THIS TEST LINE :
-    echo 5
+      if [[ $distance_to_X < $distance_to_Y ]]; then
+          nb_warm=$(echo "scale=2; $min_warm - ($distance_to_X / ($max_matrix_size - $min_matrix_size)) * ($min_warm - $max_warm)" | bc | awk '{print int($1)}')
+      else
+          nb_warm=$(echo "scale=2; $max_warm + ($distance_to_Y / ($max_matrix_size - $min_matrix_size)) * ($min_warm - $max_warm)" | bc | awk '{print int($1)}')
+      fi
+      echo $nb_warm
+    fi
 }
 
 compute_nb_rep()
 {
-    # local matrix_size=$(( $1 * $2 ))
-    # local matrix_size_step_1=$(( 100 * 100 ))
-    # local matrix_size_step_2=$(( 500 * 500 ))
-    # local matrix_size_step_3=$(( 1000 * 1000 ))
+    local matrix_size=$(( $1 * $2 ))
+    local matrix_size_step_1=$(( 100 * 100 ))
+    local matrix_size_step_2=$(( 500 * 500 ))
+    local matrix_size_step_3=$(( 1000 * 1000 ))
 
-    # if [ $matrix_size -lt $matrix_size_step_1 ]; then
-    #   echo 10000
-    # elif [ $matrix_size -lt $matrix_size_step_2 ]; then
-    #   echo 100
-    # elif [ $matrix_size -lt $matrix_size_step_3 ]; then
-    #   echo 10
-    # else 
-    #   echo 5
-    # fi
-
-    #TODO REMOVE THIS TEST LINE :
-    echo 5
+    if [ $matrix_size -lt $matrix_size_step_1 ]; then
+      echo 10000
+    elif [ $matrix_size -lt $matrix_size_step_2 ]; then
+      echo 100
+    elif [ $matrix_size -lt $matrix_size_step_3 ]; then
+      echo 10
+    else 
+      echo 5
+    fi
 }
 
 measure_kernel()
